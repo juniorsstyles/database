@@ -13,4 +13,4 @@ To install and run this program locally, follow these steps:
 
 1. **Clone the repository**:
    ```sh
-   git clone https://github.com/juniorsstyles/bookstore-clerk-program.git
+   git clone https://github.com/juniorsstyles/database.git
