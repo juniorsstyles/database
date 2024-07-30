@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS book (
 )
 ''')
 
-# Function to populate the table with initial data
 def populate_initial_data():
     initial_books = [
         (3001, 'A Tale of Two Cities', 'Charles Dickens', 30),
@@ -23,22 +22,31 @@ def populate_initial_data():
         (3004, 'The Lord of the Rings', 'J.R.R. Tolkien', 37),
         (3005, 'Alice in Wonderland', 'Lewis Carroll', 12)
     ]
-    # Insert initial data
     c.executemany('INSERT OR IGNORE INTO book VALUES (?, ?, ?, ?)', initial_books)
     conn.commit()
 
-# Function to add a new book
 def add_book():
     title = input("Enter the book title: ")
     author = input("Enter the author: ")
-    qty = int(input("Enter the quantity: "))
+    while True:
+        try:
+            qty = int(input("Enter the quantity: "))
+            if qty < 0:
+                raise ValueError
+            break
+        except ValueError:
+            print("Please enter a valid positive integer for quantity.")
     c.execute('INSERT INTO book (title, author, qty) VALUES (?, ?, ?)', (title, author, qty))
     conn.commit()
     print("Book added successfully!")
 
-# Function to update a book's information
 def update_book():
-    id = int(input("Enter the book ID to update: "))
+    while True:
+        try:
+            id = int(input("Enter the book ID to update: "))
+            break
+        except ValueError:
+            print("Please enter a valid integer for book ID.")
     title = input("Enter the new title (or press Enter to keep current): ")
     author = input("Enter the new author (or press Enter to keep current): ")
     qty = input("Enter the new quantity (or press Enter to keep current): ")
@@ -47,18 +55,27 @@ def update_book():
     if author:
         c.execute('UPDATE book SET author = ? WHERE id = ?', (author, id))
     if qty:
-        c.execute('UPDATE book SET qty = ? WHERE id = ?', (qty, id))
+        try:
+            qty = int(qty)
+            if qty < 0:
+                raise ValueError
+            c.execute('UPDATE book SET qty = ? WHERE id = ?', (qty, id))
+        except ValueError:
+            print("Quantity update skipped due to invalid input.")
     conn.commit()
     print("Book updated successfully!")
 
-# Function to delete a book
 def delete_book():
-    id = int(input("Enter the book ID to delete: "))
+    while True:
+        try:
+            id = int(input("Enter the book ID to delete: "))
+            break
+        except ValueError:
+            print("Please enter a valid integer for book ID.")
     c.execute('DELETE FROM book WHERE id = ?', (id,))
     conn.commit()
     print("Book deleted successfully!")
 
-# Function to search for a book
 def search_books():
     keyword = input("Enter a keyword to search for (title/author): ")
     c.execute("SELECT * FROM book WHERE title LIKE ? OR author LIKE ?", ('%' + keyword + '%', '%' + keyword + '%'))
@@ -69,7 +86,6 @@ def search_books():
     else:
         print("No books found.")
 
-# Function to display the menu
 def display_menu():
     print("\nMenu:")
     print("1. Enter book")
@@ -78,7 +94,6 @@ def display_menu():
     print("4. Search books")
     print("0. Exit")
 
-# Function to handle user's menu choice
 def handle_choice(choice):
     if choice == '1':
         add_book()
@@ -95,7 +110,6 @@ def handle_choice(choice):
         print("Invalid choice! Please select a valid option.")
     return True
 
-# Main program loop
 def main():
     populate_initial_data()
     while True:
